@@ -25,7 +25,7 @@ public class PlayerMove : MonoBehaviour
     PlayerState _state = PlayerState.Idle;
 
     // 캐릭터 이동속도
-    float speed = 5f;
+    public float speed = 5f;
 
     // 애니메이션
     Animator anim;
@@ -43,6 +43,11 @@ public class PlayerMove : MonoBehaviour
     // 벽에 닿았는지 확인 변수
     bool isCollWall = false;
 
+    // 사다리 변수
+    bool _ladder;
+    public bool ladderStay = false;
+
+
     // 콤보공격 변수
     int attackClick = 0;
     float lastClickedTime = 0;
@@ -56,6 +61,7 @@ public class PlayerMove : MonoBehaviour
         // 애니메이션 초기화
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
+        
     }
 
     // Update is called once per frame
@@ -85,6 +91,7 @@ public class PlayerMove : MonoBehaviour
                 break;
 
             case PlayerState.Ladder:
+                UpdateLadder();
                 break;
 
             case PlayerState.Wallside:
@@ -110,6 +117,12 @@ public class PlayerMove : MonoBehaviour
         if (rigid.velocity.y < 0 && _state != PlayerState.Wallside && _state != PlayerState.Dash)
         {
             _state = PlayerState.Fall;
+        }
+
+        if(_state != PlayerState.Ladder)
+        {
+            rigid.gravityScale = 1;
+            ladderStay = false;
         }
     }
 
@@ -284,14 +297,39 @@ public class PlayerMove : MonoBehaviour
         
     }
 
+
+    // 공격 애니메이션 이벤트 함수
     public void EndAttack()
     {
         _state = PlayerState.Idle;
     }
 
+    // 대쉬 어택
     void UpdateDashAttack()
     {
         anim.Play("DashAttack");
+    }
+
+    // 사다리
+    public void SetLadderState(bool status)
+    {
+        _ladder = status;
+    }
+
+    void UpdateLadder()
+    {
+        anim.Play("Ladder");
+        if (_ladder)
+        {
+            rigid.gravityScale = 0;
+            ladderStay = true;
+
+        }
+        else
+        {
+            rigid.gravityScale = 1;
+            ladderStay = false;
+        }
     }
 
     // 키보드 입력
@@ -307,7 +345,7 @@ public class PlayerMove : MonoBehaviour
         float moveDir = 0;
 
         // Idle로 상태 변경
-        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack)
+        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack && _state != PlayerState.Ladder)
         {
             speed = 5f;
             _state = PlayerState.Idle;
@@ -317,15 +355,21 @@ public class PlayerMove : MonoBehaviour
         // 좌우 이동
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            moveDir = -1f;
-            sprite.flipX = true;
-            isMoving = true;
+            if(_state != PlayerState.Ladder)
+            {
+                moveDir = -1f;
+                sprite.flipX = true;
+                isMoving = true;
+            }
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            moveDir = 1f;
-            sprite.flipX = false;
-            isMoving = true;
+            if(_state != PlayerState.Ladder)
+            {
+                moveDir = 1f;
+                sprite.flipX = false;
+                isMoving = true;
+            }
         }
         
         // 이동 적용
@@ -338,6 +382,19 @@ public class PlayerMove : MonoBehaviour
                 _state = PlayerState.Walk;
             }
         }
+
+        // 사다리 이동
+        if (Input.GetKey(KeyCode.UpArrow) && _ladder)
+        {
+            transform.position += Vector3.up * Time.deltaTime * speed;
+            _state = PlayerState.Ladder;
+        }
+        else if (Input.GetKey(KeyCode.DownArrow) && _ladder)
+        {
+            transform.position += Vector3.down * speed * Time.deltaTime;
+            _state = PlayerState.Ladder;
+        }
+
 
         // 점프
         if (Input.GetKeyDown(KeyCode.A) && jumpCount < maxJumpCount)
@@ -354,7 +411,6 @@ public class PlayerMove : MonoBehaviour
                 rigid.velocity = Vector2.up * 6;
             }
             isMoving = true;
-            //isJumpping = true;
             jumpCount++;
         }
 
