@@ -20,6 +20,7 @@ public class PlayerMove : MonoBehaviour
         Attack,
         DashAttack,
     }
+
     // 초기 캐릭터 상태
     PlayerState _state = PlayerState.Idle;
 
@@ -43,9 +44,9 @@ public class PlayerMove : MonoBehaviour
     bool isCollWall = false;
 
     // 콤보공격 변수
-    int noOfClicks = 0;
+    int attackClick = 0;
     float lastClickedTime = 0;
-    float maxComboDelay = 0.7f;
+    public float maxComboDelay = 1.3f;
 
     Rigidbody2D rigid;
 
@@ -101,6 +102,7 @@ public class PlayerMove : MonoBehaviour
                 break;
 
             case PlayerState.DashAttack:
+                UpdateDashAttack();
                 break;
         }
 
@@ -252,19 +254,18 @@ public class PlayerMove : MonoBehaviour
             _state = PlayerState.Idle;
     }
 
-    // @@@@@@@@@@@@@@@@@@@@ 공격 @@@@@@@@@@@@@@@@@@@@@@@
-    
-
+    // 공격
     void UpdateAttack()
     {
         if(Time.time - lastClickedTime > maxComboDelay)
         {
-            noOfClicks = 0;
+            attackClick = 0;
+            
         }
 
-        switch (noOfClicks)
+        switch (attackClick)
         {
-            case 1: 
+            case 1:
                 anim.Play("Attack1");
                 break;
 
@@ -276,21 +277,22 @@ public class PlayerMove : MonoBehaviour
                 anim.Play("Attack3");
                 break;
             default:
-                _state = PlayerState.Idle;
+                anim.SetBool("ComboEnd",true);
                 break;
         }
-        noOfClicks = Mathf.Clamp(noOfClicks, 0, 3);
+        attackClick = Mathf.Clamp(attackClick, 0, 3);
         
+    }
+
+    public void EndAttack()
+    {
+        _state = PlayerState.Idle;
     }
 
     void UpdateDashAttack()
     {
-        anim.Play("Attack1");
         anim.Play("DashAttack");
     }
-
-
-
 
     // 키보드 입력
     void OnKeyboard()
@@ -309,7 +311,7 @@ public class PlayerMove : MonoBehaviour
         {
             speed = 5f;
             _state = PlayerState.Idle;
-            noOfClicks = 0;
+            attackClick = 0;
         }
 
         // 좌우 이동
@@ -373,7 +375,7 @@ public class PlayerMove : MonoBehaviour
             }
             else
             {
-                noOfClicks++;
+                attackClick++;
                 lastClickedTime = Time.time;
                 _state = PlayerState.Attack;
             }
