@@ -26,9 +26,10 @@ public class CameraMove : MonoBehaviour
 
     // 피킹
     public bool isPeeking = false;
-    float peeking = 0;
-    float peekingSpeed = 2f;
-    float peekingUpDown = 0f;
+    float peekingSpeed = 5f;
+    float peekingDir = 0f;
+    float maxPeekingOffset = 2f;
+    float peeking = 0f;
 
     // 1초간 움직일 거리
     public float forceScrollSpeedX = 0.5f;
@@ -90,14 +91,26 @@ public class CameraMove : MonoBehaviour
         // 세로 강제 자동 스크롤 ( 윗키나 아랫키 누르고 있으면 카메라 위치 변경해줌)
         if (isPeeking)
         {
-            peeking += transform.position.y + (peekingUpDown * peekingSpeed * Time.deltaTime); // <- 양수, 음수 값 넘겨받은거 넣어주자
-            peeking = Mathf.Clamp(peeking, -1, 1);
-            transform.position = new Vector3(limitCameraX, peeking, -10);
+            float targetPeekingOffset = peekingDir * maxPeekingOffset;
+             
+            peeking = Mathf.MoveTowards(peeking, targetPeekingOffset, peekingSpeed * Time.deltaTime);
+
+            float movePeeking = limitCameraY + peeking;
+            if(movePeeking > topLimit)
+            {
+                movePeeking = topLimit;
+            }
+            else if(movePeeking < bottomLimit)
+            {
+                movePeeking = bottomLimit;
+            }
+            transform.position = new Vector3(limitCameraX,movePeeking, -10);
             
         }
         else 
         { 
             transform.position = new Vector3(limitCameraX, limitCameraY, -10);
+            peeking = 0;
             
         }
 
@@ -133,9 +146,9 @@ public class CameraMove : MonoBehaviour
         }
     }
 
-    public void GetIsPeeking(bool _isPeeking, float _upAndDown)
+    public void SetIsPeeking(bool _isPeeking, float _peekingDir)
     {
         isPeeking = _isPeeking;
-        peekingUpDown = _upAndDown;
+        peekingDir = _peekingDir;
     }
 }

@@ -19,14 +19,18 @@ public class PlayerMove : MonoBehaviour
         Die,
         Attack,
         DashAttack,
-        Peeking
+        Peeking,
     }
 
     // 초기 캐릭터 상태
     PlayerState _state = PlayerState.Idle;
 
-    // 캐릭터 이동속도
-    public float speed = 5f;
+    // 캐릭터 리지드바디
+    Rigidbody2D rigid;
+
+    // 캐릭터 이동
+    public float moveSpeed = 5f;
+    float moveDir = 0;
 
     // 애니메이션
     Animator anim;
@@ -47,23 +51,27 @@ public class PlayerMove : MonoBehaviour
     bool _ladder;
     bool canMove = true;
 
-    float peekingTIme = 0f;
-
     // 콤보공격 변수
     int attackClick = 0;
     float lastClickedTime = 0;
     public float maxComboDelay = 1.3f;
 
-    Rigidbody2D rigid;
-
+    // 카메라 피킹
     CameraMove cameraMove;
+    float peekingTIme = 0f;
+    float peekingDir;
+
+    // 텔레포트
+    //Teleport teleport;
+    //bool canTeleport = false;
 
     void Start()
     {
-        // 애니메이션 초기화
+        // 변수 찾기
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         cameraMove = FindObjectOfType<CameraMove>();
+        //teleport = FindObjectOfType<Teleport>();
         
     }
 
@@ -118,6 +126,10 @@ public class PlayerMove : MonoBehaviour
             case PlayerState.Peeking:
                 UpdatePeeking();
                 break;
+            
+            /*case PlayerState.Teleport:
+                UpdateTeleport();
+                break;*/
         }
 
         // 낙하시
@@ -135,7 +147,7 @@ public class PlayerMove : MonoBehaviour
         // 대시 중이 아닐 때만 물리 기반 이동 적용
         if (!isDashing)
         {
-            rigid.velocity = new Vector2(rigid.velocity.x, rigid.velocity.y);
+            rigid.velocity = new Vector2(moveDir * moveSpeed, rigid.velocity.y);
         }
     }
 
@@ -147,30 +159,36 @@ public class PlayerMove : MonoBehaviour
 
         if(cameraMove != null)
         {
-            SetIsPeeking(false, 0);
+           cameraMove.SetIsPeeking(false, 0);
         }
+
     }
 
+    // 피킹
     void UpdatePeeking()
     {
-        Debug.Log("피킹상태");
+        
         anim.Play("Idle");
 
-        if (Input.GetKey(KeyCode.UpArrow) && peekingTIme > 1f)
+        if (Input.GetKey(KeyCode.UpArrow))
         {
-            SetIsPeeking(true, 1);
+            peekingDir = 1;
         }
 
-        if (Input.GetKey(KeyCode.DownArrow) && peekingTIme > 1f)
+        else if (Input.GetKey(KeyCode.DownArrow))
         {
-            SetIsPeeking(true, -1);
+            peekingDir = -1;
+        }
+        else
+        {
+            _state = PlayerState.Idle;
+        }
+
+        if(cameraMove != null)
+        {
+            cameraMove.SetIsPeeking(true, peekingDir);
         }
     }
-
-     void SetIsPeeking(bool isPeeking, float upAndDown)
-     {
-        cameraMove.GetIsPeeking(isPeeking, upAndDown);
-     }
 
     // 이동
     void UpdateWalk()
@@ -203,6 +221,25 @@ public class PlayerMove : MonoBehaviour
 
     }
 
+    // 텔레포트
+    /*void UpdateTeleport()
+    {
+        teleport.SetCanTeleport(true);
+        anim.Play("Teleport");
+    }*/
+
+    // 텔레포트 코루틴
+    /*private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Teleport"))
+        {
+            canTeleport = true;
+        }
+        else
+        {
+            canTeleport = false;
+        }
+    }*/
 
 
     // 땅에 닿았을때 -> Idle로 변경 , 벽의 옆면에 닿았을때 -> Wallside로 변경 
@@ -247,6 +284,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // 맵이랑 닿지 않을때
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Map"))
@@ -266,12 +304,12 @@ public class PlayerMove : MonoBehaviour
         else
         {
             // 대쉬 스피드
-            speed = dashSpeed;
+            moveSpeed = dashSpeed;
             anim.Play("Dash");
             dashTime -= Time.deltaTime;
 
             float dashDir = GetComponent<SpriteRenderer>().flipX ? -1f : 1f;
-            Vector3 movement = Vector3.right * dashDir * Time.deltaTime * speed;
+            Vector3 movement = Vector3.right * dashDir * Time.deltaTime * moveSpeed;
 
             // 벽과 충돌 체크
             RaycastHit2D hit = Physics2D.Raycast(transform.position, new Vector2(dashDir, 0), movement.magnitude, LayerMask.GetMask("Map"));
@@ -291,7 +329,7 @@ public class PlayerMove : MonoBehaviour
     // 대쉬 끝
     void EndDash()
     {
-        speed = 5f;
+        moveSpeed = 5f;
         isDashing = false;
 
         if (rigid.velocity.y < 0)
@@ -357,12 +395,14 @@ public class PlayerMove : MonoBehaviour
 
     }
 
+
+
     // 키보드 입력
     void OnKeyboard()
     {
         // 움직이는지 확인
         bool isMoving = false;
-
+        
         // 스프라이트렌더러 초기화
         SpriteRenderer sprite = GetComponent<SpriteRenderer>();
 
@@ -372,7 +412,7 @@ public class PlayerMove : MonoBehaviour
         // Idle로 상태 변경
         if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack && _state != PlayerState.Ladder)
         {
-            speed = 5f;
+            moveSpeed = 5f;
             _state = PlayerState.Idle;
             attackClick = 0;
         }
@@ -400,45 +440,45 @@ public class PlayerMove : MonoBehaviour
         // 이동 적용
         if (isMoving && !isDashing)
         {
-            transform.position += Vector3.right * moveDir * Time.deltaTime * speed;
-            // 점프나 떨어질때는 이동애니메이션 안나옴
+            // 점프나 떨어질때는 이동 애니메이션 안나옴
             if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack)
             {
                 _state = PlayerState.Walk;
             }
         }
 
-        if (Input.GetKey(KeyCode.UpArrow) && _state == PlayerState.Idle)
+        // 텔레포트
+        /*if ( _state == PlayerState.Idle && canTeleport)
+        {
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                _state = PlayerState.Teleport;
+            }
+        }*/
+
+        // 카메라 피킹
+        if (Input.GetKey(KeyCode.UpArrow)|| Input.GetKey(KeyCode.DownArrow) && _state == PlayerState.Idle)
         {
             peekingTIme += Time.deltaTime;
-            if (peekingTIme > 1f)
+            if (peekingTIme > 0.5f)
             {
                 _state = PlayerState.Peeking;
             }
         }
-
-        if (Input.GetKey(KeyCode.DownArrow) && _state == PlayerState.Idle)
+        else
         {
-            peekingTIme += Time.deltaTime;
-            if (peekingTIme > 1f)
-            {
-                _state = PlayerState.Peeking;
-            }
+            peekingTIme = 0f;
         }
-
-
-
-
 
         // 사다리 이동
         if (Input.GetKey(KeyCode.UpArrow) && _ladder)
         {
-            transform.position += Vector3.up * Time.deltaTime * speed;
+            transform.position += Vector3.up * Time.deltaTime * moveSpeed;
             _state = PlayerState.Ladder;
         }
         else if (Input.GetKey(KeyCode.DownArrow) && _ladder)
         {
-            transform.position += Vector3.down * speed * Time.deltaTime;
+            transform.position += Vector3.down * moveSpeed * Time.deltaTime;
             _state = PlayerState.Ladder;
         }
 
