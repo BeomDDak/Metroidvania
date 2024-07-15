@@ -1,51 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Teleport : MonoBehaviour
 {
-    /*public GameObject TeleportPosition;
-
+    public GameObject TeleportPosition;
+    GameObject player;
     bool canTeleport = false;
     void Start()
     {
-        
+        player = GameObject.FindWithTag("Player");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Tele()
     {
-        
+        Invoke("TelePlayer", 1.2f);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    void TelePlayer()
     {
-        if (collision.CompareTag("Player"))
-        {
-            if(canTeleport)
-            {
-                StartCoroutine(Tele());
-                collision.gameObject.transform.position = TeleportPosition.transform.position;
-            }
-        }
+        Vector2 _telePos = new Vector2(TeleportPosition.transform.position.x, TeleportPosition.transform.position.y + 2);
+        player.transform.position = _telePos;
     }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            canTeleport = false;
-        }
-    }
-
-
-    public void SetCanTeleport(bool _canTeleport)
-    {
-        canTeleport = _canTeleport;
-    }
-
-    IEnumerator Tele()
-    {
-        yield return new WaitForSeconds(1f);
-    }
-    */
+    
 }

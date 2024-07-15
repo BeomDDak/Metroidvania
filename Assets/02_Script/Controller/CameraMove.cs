@@ -88,7 +88,7 @@ public class CameraMove : MonoBehaviour
         // 카메라 이동
         transform.position = new Vector3(limitCameraX, limitCameraY, -10);
 
-        // 세로 강제 자동 스크롤 ( 윗키나 아랫키 누르고 있으면 카메라 위치 변경해줌)
+        // 피킹
         if (isPeeking)
         {
             float targetPeekingOffset = peekingDir * maxPeekingOffset;

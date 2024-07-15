@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class PlayerMove : MonoBehaviour
 {
-    // 캐릭터 상태
+    #region Enum 캐릭터 상태
     public enum PlayerState
     {
         Idle,
@@ -20,8 +19,11 @@ public class PlayerMove : MonoBehaviour
         Attack,
         DashAttack,
         Peeking,
+        Teleport,
     }
+    #endregion
 
+    #region 초기 변수
     // 초기 캐릭터 상태
     PlayerState _state = PlayerState.Idle;
 
@@ -30,7 +32,6 @@ public class PlayerMove : MonoBehaviour
 
     // 캐릭터 이동
     public float moveSpeed = 5f;
-    float moveDir = 0;
 
     // 애니메이션
     Animator anim;
@@ -61,24 +62,27 @@ public class PlayerMove : MonoBehaviour
     float peekingTIme = 0f;
     float peekingDir;
 
-    // 텔레포트
-    //Teleport teleport;
-    //bool canTeleport = false;
+     // 텔레포트
+    Teleport teleport;
+    bool canTeleport = false;
+    #endregion
 
     void Start()
     {
-        // 변수 찾기
+        #region 변수 찾기
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         cameraMove = FindObjectOfType<CameraMove>();
-        //teleport = FindObjectOfType<Teleport>();
-        
+        teleport = FindObjectOfType<Teleport>();
+        #endregion
     }
 
-    // Update is called once per frame
     void Update()
     {
+        
         OnKeyboard();
+
+        #region _state Switch문
         switch (_state)
         {
             case PlayerState.Idle:
@@ -127,10 +131,11 @@ public class PlayerMove : MonoBehaviour
                 UpdatePeeking();
                 break;
             
-            /*case PlayerState.Teleport:
+            case PlayerState.Teleport:
                 UpdateTeleport();
-                break;*/
+                break;
         }
+        #endregion
 
         // 낙하시
         if (rigid.velocity.y < 0 && _state != PlayerState.Wallside && _state != PlayerState.Dash)
@@ -138,16 +143,14 @@ public class PlayerMove : MonoBehaviour
             _state = PlayerState.Fall;
             canMove = true;
         }
-
-
     }
 
     void FixedUpdate()
     {
         // 대시 중이 아닐 때만 물리 기반 이동 적용
-        if (!isDashing)
+        if (!isDashing || _state != PlayerState.Teleport)
         {
-            rigid.velocity = new Vector2(moveDir * moveSpeed, rigid.velocity.y);
+            rigid.velocity = new Vector2(rigid.velocity.x, rigid.velocity.y);
         }
     }
 
@@ -157,13 +160,13 @@ public class PlayerMove : MonoBehaviour
         anim.Play("Idle");
         jumpCount = 0;
 
-        if(cameraMove != null)
+        if (cameraMove != null)
         {
            cameraMove.SetIsPeeking(false, 0);
         }
 
     }
-
+    
     // 피킹
     void UpdatePeeking()
     {
@@ -194,6 +197,7 @@ public class PlayerMove : MonoBehaviour
     void UpdateWalk()
     {
         anim.Play("Walk");
+        
     }
 
     // 점프
@@ -222,25 +226,26 @@ public class PlayerMove : MonoBehaviour
     }
 
     // 텔레포트
-    /*void UpdateTeleport()
+    void UpdateTeleport()
     {
-        teleport.SetCanTeleport(true);
         anim.Play("Teleport");
-    }*/
+        teleport.Tele();
+    }
 
-    // 텔레포트 코루틴
-    /*private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Teleport"))
         {
             canTeleport = true;
         }
-        else
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Teleport"))
         {
             canTeleport = false;
         }
-    }*/
-
+    }
 
     // 땅에 닿았을때 -> Idle로 변경 , 벽의 옆면에 닿았을때 -> Wallside로 변경 
     void OnCollisionStay2D(Collision2D collision)
@@ -251,7 +256,7 @@ public class PlayerMove : MonoBehaviour
             foreach (ContactPoint2D contact in collision.contacts)
             {
                 // 벽의 측면에 닿았는지 확인
-                if (Mathf.Abs(contact.normal.x) > 0.5f)
+                if (Mathf.Abs(contact.normal.x) > 0.5f && _state != PlayerState.Teleport)
                 {
                     isCollWall = true;
                     if (_state != PlayerState.Dash)
@@ -395,8 +400,6 @@ public class PlayerMove : MonoBehaviour
 
     }
 
-
-
     // 키보드 입력
     void OnKeyboard()
     {
@@ -410,7 +413,7 @@ public class PlayerMove : MonoBehaviour
         float moveDir = 0;
 
         // Idle로 상태 변경
-        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack && _state != PlayerState.Ladder)
+        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport)
         {
             moveSpeed = 5f;
             _state = PlayerState.Idle;
@@ -440,6 +443,7 @@ public class PlayerMove : MonoBehaviour
         // 이동 적용
         if (isMoving && !isDashing)
         {
+            transform.position += Vector3.right * moveDir * Time.deltaTime * moveSpeed;
             // 점프나 떨어질때는 이동 애니메이션 안나옴
             if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack)
             {
@@ -448,21 +452,24 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 텔레포트
-        /*if ( _state == PlayerState.Idle && canTeleport)
+        if ( _state == PlayerState.Idle && canTeleport)
         {
-            if (Input.GetKey(KeyCode.UpArrow))
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 _state = PlayerState.Teleport;
             }
-        }*/
+        }
 
         // 카메라 피킹
-        if (Input.GetKey(KeyCode.UpArrow)|| Input.GetKey(KeyCode.DownArrow) && _state == PlayerState.Idle)
+        if (_state == PlayerState.Idle && _state != PlayerState.Teleport)
         {
-            peekingTIme += Time.deltaTime;
-            if (peekingTIme > 0.5f)
+            if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
             {
-                _state = PlayerState.Peeking;
+                peekingTIme += Time.deltaTime;
+                if (peekingTIme > 0.5f)
+                {
+                    _state = PlayerState.Peeking;
+                }
             }
         }
         else
