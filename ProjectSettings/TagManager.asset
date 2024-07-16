@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Ladder
   - Teleport
+  - Trap
   layers:
   - Default
   - TransparentFX

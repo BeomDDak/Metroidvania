@@ -25,7 +25,7 @@ public class PlayerMove : MonoBehaviour
 
     #region 초기 변수
     // 초기 캐릭터 상태
-    PlayerState _state = PlayerState.Idle;
+    public PlayerState _state = PlayerState.Idle;
 
     // 캐릭터 리지드바디
     Rigidbody2D rigid;
@@ -114,6 +114,7 @@ public class PlayerMove : MonoBehaviour
                 break;
 
             case PlayerState.Hit:
+                UpdateHit();
                 break;
 
             case PlayerState.Die:
@@ -138,13 +139,14 @@ public class PlayerMove : MonoBehaviour
         #endregion
 
         // 낙하시
-        if (rigid.velocity.y < 0 && _state != PlayerState.Wallside && _state != PlayerState.Dash)
+        if (rigid.velocity.y < 0 && _state != PlayerState.Wallside && _state != PlayerState.Dash && _state != PlayerState.Hit)
         {
             _state = PlayerState.Fall;
             canMove = true;
         }
     }
 
+    #region FixedUpdate() (대쉬 중이 아닐때 물리 적용)
     void FixedUpdate()
     {
         // 대시 중이 아닐 때만 물리 기반 이동 적용
@@ -153,8 +155,26 @@ public class PlayerMove : MonoBehaviour
             rigid.velocity = new Vector2(rigid.velocity.x, rigid.velocity.y);
         }
     }
+    #endregion
 
-    // 아이들
+    void UpdateHit()
+    {
+        anim.Play("Hit");
+        
+        StartCoroutine(StopHit());
+    }
+
+    IEnumerator StopHit()
+    {
+        float hitDir = GetComponent<SpriteRenderer>().flipX ? -1f : 1f;
+        float hitdis = 2;
+
+        rigid.AddForce((Vector2.right * -hitDir * hitdis) + Vector2.up * 3);
+        yield return new WaitForSeconds(0.5f);
+        _state = PlayerState.Fall;
+    }
+
+    #region 업데이트아이들
     void UpdateIdle()
     {
         anim.Play("Idle");
@@ -166,8 +186,9 @@ public class PlayerMove : MonoBehaviour
         }
 
     }
-    
-    // 피킹
+    #endregion
+
+    #region 업데이트피킹
     void UpdatePeeking()
     {
         
@@ -192,15 +213,17 @@ public class PlayerMove : MonoBehaviour
             cameraMove.SetIsPeeking(true, peekingDir);
         }
     }
+    #endregion
 
-    // 이동
+    #region 업데이트 이동
     void UpdateWalk()
     {
         anim.Play("Walk");
         
     }
+    #endregion
 
-    // 점프
+    #region 업데이트 점프, 낙하, 벽 옆면
     void UpdateJump()
     {
         anim.Play("Jump");
@@ -224,8 +247,9 @@ public class PlayerMove : MonoBehaviour
         anim.Play("Wallside");
 
     }
+    #endregion
 
-    // 텔레포트
+    #region 업데이트 텔레포트
     void UpdateTeleport()
     {
         anim.Play("Teleport");
@@ -236,6 +260,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (collision.CompareTag("Teleport"))
         {
+            teleport = collision.gameObject.GetComponent<Teleport>();
             canTeleport = true;
         }
     }
@@ -246,8 +271,9 @@ public class PlayerMove : MonoBehaviour
             canTeleport = false;
         }
     }
+    #endregion
 
-    // 땅에 닿았을때 -> Idle로 변경 , 벽의 옆면에 닿았을때 -> Wallside로 변경 
+    #region OnCollisionStay2D (땅 -> Idle, 벽 옆면-> Wallside) 
     void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Map"))
@@ -289,6 +315,8 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    #endregion
+
     // 맵이랑 닿지 않을때
     void OnCollisionExit2D(Collision2D collision)
     {
@@ -298,7 +326,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // 대쉬
+    #region 업데이트 대쉬
     void UpdateDash()
     {
         // 시간 지나거나 벽에 부딪히면 대쉬 끝
@@ -331,6 +359,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+
     // 대쉬 끝
     void EndDash()
     {
@@ -342,7 +371,15 @@ public class PlayerMove : MonoBehaviour
         else
             _state = PlayerState.Idle;
     }
+    #endregion
 
+    // 대쉬 어택
+    void UpdateDashAttack()
+    {
+        anim.Play("DashAttack");
+    }
+
+    #region 업데이트 어택
     // 공격
     void UpdateAttack()
     {
@@ -379,13 +416,9 @@ public class PlayerMove : MonoBehaviour
     {
         _state = PlayerState.Idle;
     }
+    #endregion
 
-    // 대쉬 어택
-    void UpdateDashAttack()
-    {
-        anim.Play("DashAttack");
-    }
-
+    #region 업데이트 사다리
     // 사다리 스크립트에서 bool값 받아오는 함수
     public void SetLadderState(bool status)
     {
@@ -399,8 +432,9 @@ public class PlayerMove : MonoBehaviour
         canMove = false;
 
     }
+    #endregion
 
-    // 키보드 입력
+    #region OnKeyboard() (키보드 입력)
     void OnKeyboard()
     {
         // 움직이는지 확인
@@ -413,7 +447,8 @@ public class PlayerMove : MonoBehaviour
         float moveDir = 0;
 
         // Idle로 상태 변경
-        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport)
+        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && 
+            _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit)
         {
             moveSpeed = 5f;
             _state = PlayerState.Idle;
@@ -423,16 +458,17 @@ public class PlayerMove : MonoBehaviour
         // 좌우 이동
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            if(canMove)
+            if(canMove && _state != PlayerState.Hit)
             {
                 moveDir = -1f;
                 sprite.flipX = true;
                 isMoving = true;
             }
         }
+
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if(canMove)
+            if(canMove && _state != PlayerState.Hit)
             {
                 moveDir = 1f;
                 sprite.flipX = false;
@@ -445,7 +481,7 @@ public class PlayerMove : MonoBehaviour
         {
             transform.position += Vector3.right * moveDir * Time.deltaTime * moveSpeed;
             // 점프나 떨어질때는 이동 애니메이션 안나옴
-            if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack)
+            if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack && _state != PlayerState.Hit)
             {
                 _state = PlayerState.Walk;
             }
@@ -531,4 +567,6 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+
+    #endregion
 }

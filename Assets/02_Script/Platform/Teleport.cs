@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class Teleport : MonoBehaviour
 {
-    public GameObject TeleportPosition;
+    public Transform toTeleport;
+    //public Transform targetTeleport;
     GameObject player;
-    bool canTeleport = false;
+    Vector2 _telePos;
+
     void Start()
     {
         player = GameObject.FindWithTag("Player");
@@ -20,8 +22,7 @@ public class Teleport : MonoBehaviour
 
     void TelePlayer()
     {
-        Vector2 _telePos = new Vector2(TeleportPosition.transform.position.x, TeleportPosition.transform.position.y + 2);
+        _telePos = new Vector2(toTeleport.transform.position.x, toTeleport.transform.position.y + 1);
         player.transform.position = _telePos;
     }
-    
 }
