@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerDamage : MonoBehaviour
@@ -8,7 +9,9 @@ public class PlayerDamage : MonoBehaviour
     Color oriColor;
     Color damageColor;
     PlayerMove _playerState;
-    Heart _heart;
+
+    public GameObject[] heart = new GameObject[5];
+    int heartHp = 4;
 
     void Start()
     {
@@ -16,7 +19,11 @@ public class PlayerDamage : MonoBehaviour
         oriColor = playerColor.color;
         damageColor = Color.red;
         _playerState = GetComponent<PlayerMove>();
-        _heart = GetComponent<Heart>();
+    }
+
+    private void Update()
+    {
+        UI_HeartChanges();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -24,13 +31,14 @@ public class PlayerDamage : MonoBehaviour
         Debug.Log("트리거");
         if (collision.CompareTag("Trap"))
         {
-            StartCoroutine(PlayerDamageAlpha());
+            StartCoroutine(PlayerDamageEffect());
             _playerState._state = PlayerMove.PlayerState.Hit;
-            _heart.heartHp -= 1;
+            HeartCalc(-1);
         }
     }
 
-    IEnumerator PlayerDamageAlpha()
+    // 캐릭터 데미지 이펙트
+    IEnumerator PlayerDamageEffect()
     {
         for(int i = 0; i <= 2; i++)
         {
@@ -39,5 +47,38 @@ public class PlayerDamage : MonoBehaviour
             playerColor.color = oriColor;
             yield return new WaitForSeconds(0.2f);
         }
+    }
+
+    void UI_HeartChanges()
+    {
+        if (heartHp > 5)
+        {
+            heartHp = 5;
+        }
+
+        if (heartHp < 0)
+        {
+            heartHp = 0;
+            _playerState._state = PlayerMove.PlayerState.Die;
+        }
+
+        for (int i = 0; i < heart.Length; i++)
+        {
+            if (heartHp == i)
+            {
+                heart[i].SetActive(true);
+            }
+            else
+            {
+                heart[i].SetActive(false);
+                heart[0].SetActive(true);
+            }
+        }
+    }
+
+    public int HeartCalc(int _changeCalc)
+    {
+        heartHp = heartHp + _changeCalc;
+        return heartHp;
     }
 }

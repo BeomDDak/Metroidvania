@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01_Scenes/Tittle.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/01_Scenes/Villige.unity
+    guid: 7b336bcc5aa7ed349b5e2e3631da8f03
+  - enabled: 1
+    path: Assets/01_Scenes/JumpMap.unity
+    guid: 1927bfb2493df994193b60191ba8a79a
+  - enabled: 1
+    path: Assets/01_Scenes/Teleport.unity
+    guid: f079908a156ad704b9598fa95e65b51c
   m_configObjects: {}

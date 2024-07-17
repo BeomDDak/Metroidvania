@@ -77,6 +77,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -89,6 +90,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -270,6 +272,7 @@ ScriptedImporter:
     cells:
     - name: Death_Frame_0
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 23
         y: 0
@@ -278,6 +281,7 @@ ScriptedImporter:
       spriteId: d41b0208a675c9c44820e11cc0e1d749
     - name: Death_Frame_1
       frameIndex: 1
+      additiveSortOrder: 0
       cellRect:
         x: 21
         y: 0
@@ -286,6 +290,7 @@ ScriptedImporter:
       spriteId: 18c944b1cfbe5fc4686e14b0fea327e9
     - name: Death_Frame_2
       frameIndex: 2
+      additiveSortOrder: 0
       cellRect:
         x: 26
         y: 0
@@ -294,6 +299,7 @@ ScriptedImporter:
       spriteId: d2fa2c02713d6bf4ebf59559112d3960
     - name: Death_Frame_3
       frameIndex: 3
+      additiveSortOrder: 0
       cellRect:
         x: 26
         y: 0
@@ -302,6 +308,7 @@ ScriptedImporter:
       spriteId: 0796050311b9f1746ab35d617d29e55e
     - name: Death_Frame_4
       frameIndex: 4
+      additiveSortOrder: 0
       cellRect:
         x: 22
         y: 0
@@ -310,6 +317,7 @@ ScriptedImporter:
       spriteId: a8830f8e049e9df44b7a684fa14946cb
     - name: Death_Frame_5
       frameIndex: 5
+      additiveSortOrder: 0
       cellRect:
         x: 22
         y: 0
@@ -318,6 +326,7 @@ ScriptedImporter:
       spriteId: faf37a8cfa828ac469aacd68bceaeaf1
     - name: Death_Frame_6
       frameIndex: 6
+      additiveSortOrder: 0
       cellRect:
         x: 22
         y: 0
@@ -327,6 +336,7 @@ ScriptedImporter:
     linkedCells: []
     parentIndex: -1
   platformSettings: []
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}

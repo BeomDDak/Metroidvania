@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+
     #region Enum 캐릭터 상태
     public enum PlayerState
     {
@@ -118,6 +119,7 @@ public class PlayerMove : MonoBehaviour
                 break;
 
             case PlayerState.Die:
+                UpdateDie();
                 break;
 
             case PlayerState.Attack:
@@ -157,6 +159,7 @@ public class PlayerMove : MonoBehaviour
     }
     #endregion
 
+    #region 업데이트 히트
     void UpdateHit()
     {
         anim.Play("Hit");
@@ -169,10 +172,11 @@ public class PlayerMove : MonoBehaviour
         float hitDir = GetComponent<SpriteRenderer>().flipX ? -1f : 1f;
         float hitdis = 2;
 
-        rigid.AddForce((Vector2.right * -hitDir * hitdis) + Vector2.up * 3);
-        yield return new WaitForSeconds(0.5f);
+        rigid.velocity = new Vector2(-hitDir * hitdis,2);
+        yield return new WaitForSeconds(0.3f);
         _state = PlayerState.Fall;
     }
+    #endregion
 
     #region 업데이트아이들
     void UpdateIdle()
@@ -187,6 +191,12 @@ public class PlayerMove : MonoBehaviour
 
     }
     #endregion
+
+    void UpdateDie()
+    {
+        anim.Play("Die");
+
+    }
 
     #region 업데이트피킹
     void UpdatePeeking()
@@ -264,6 +274,7 @@ public class PlayerMove : MonoBehaviour
             canTeleport = true;
         }
     }
+
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Teleport"))
@@ -271,9 +282,10 @@ public class PlayerMove : MonoBehaviour
             canTeleport = false;
         }
     }
+
     #endregion
 
-    #region OnCollisionStay2D (땅 -> Idle, 벽 옆면-> Wallside) 
+    #region OnCollisionStay,Exit (땅 -> Idle, 벽 옆면-> Wallside) 
     void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Map"))
@@ -315,8 +327,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    #endregion
-
     // 맵이랑 닿지 않을때
     void OnCollisionExit2D(Collision2D collision)
     {
@@ -325,6 +335,7 @@ public class PlayerMove : MonoBehaviour
             isCollWall = false;
         }
     }
+    #endregion
 
     #region 업데이트 대쉬
     void UpdateDash()
@@ -437,136 +448,139 @@ public class PlayerMove : MonoBehaviour
     #region OnKeyboard() (키보드 입력)
     void OnKeyboard()
     {
-        // 움직이는지 확인
-        bool isMoving = false;
-        
-        // 스프라이트렌더러 초기화
-        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
-
-        // 이동방향
-        float moveDir = 0;
-
-        // Idle로 상태 변경
-        if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside && 
-            _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit)
+        if(_state != PlayerState.Die)
         {
-            moveSpeed = 5f;
-            _state = PlayerState.Idle;
-            attackClick = 0;
-        }
+            // 움직이는지 확인
+            bool isMoving = false;
 
-        // 좌우 이동
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            if(canMove && _state != PlayerState.Hit)
+            // 스프라이트렌더러 초기화
+            SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+
+            // 이동방향
+            float moveDir = 0;
+
+            // Idle로 상태 변경
+            if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside &&
+                _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit)
             {
-                moveDir = -1f;
-                sprite.flipX = true;
-                isMoving = true;
+                moveSpeed = 5f;
+                _state = PlayerState.Idle;
+                attackClick = 0;
             }
-        }
 
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
-            if(canMove && _state != PlayerState.Hit)
+            // 좌우 이동
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
-                moveDir = 1f;
-                sprite.flipX = false;
-                isMoving = true;
-            }
-        }
-        
-        // 이동 적용
-        if (isMoving && !isDashing)
-        {
-            transform.position += Vector3.right * moveDir * Time.deltaTime * moveSpeed;
-            // 점프나 떨어질때는 이동 애니메이션 안나옴
-            if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack && _state != PlayerState.Hit)
-            {
-                _state = PlayerState.Walk;
-            }
-        }
-
-        // 텔레포트
-        if ( _state == PlayerState.Idle && canTeleport)
-        {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                _state = PlayerState.Teleport;
-            }
-        }
-
-        // 카메라 피킹
-        if (_state == PlayerState.Idle && _state != PlayerState.Teleport)
-        {
-            if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
-            {
-                peekingTIme += Time.deltaTime;
-                if (peekingTIme > 0.5f)
+                if (canMove && _state != PlayerState.Hit)
                 {
-                    _state = PlayerState.Peeking;
+                    moveDir = -1f;
+                    sprite.flipX = true;
+                    isMoving = true;
+                }
+            }
+
+            else if (Input.GetKey(KeyCode.RightArrow))
+            {
+                if (canMove && _state != PlayerState.Hit)
+                {
+                    moveDir = 1f;
+                    sprite.flipX = false;
+                    isMoving = true;
+                }
+            }
+
+            // 이동 적용
+            if (isMoving && !isDashing)
+            {
+                transform.position += Vector3.right * moveDir * Time.deltaTime * moveSpeed;
+                // 점프나 떨어질때는 이동 애니메이션 안나옴
+                if (_state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Attack && _state != PlayerState.Hit)
+                {
+                    _state = PlayerState.Walk;
+                }
+            }
+
+            // 텔레포트
+            if (_state == PlayerState.Idle && canTeleport)
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    _state = PlayerState.Teleport;
+                }
+            }
+
+            // 카메라 피킹
+            if (_state == PlayerState.Idle && _state != PlayerState.Teleport)
+            {
+                if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow))
+                {
+                    peekingTIme += Time.deltaTime;
+                    if (peekingTIme > 0.5f)
+                    {
+                        _state = PlayerState.Peeking;
+                    }
+                }
+            }
+            else
+            {
+                peekingTIme = 0f;
+            }
+
+            // 사다리 이동
+            if (Input.GetKey(KeyCode.UpArrow) && _ladder)
+            {
+                transform.position += Vector3.up * Time.deltaTime * moveSpeed;
+                _state = PlayerState.Ladder;
+            }
+            else if (Input.GetKey(KeyCode.DownArrow) && _ladder)
+            {
+                transform.position += Vector3.down * moveSpeed * Time.deltaTime;
+                _state = PlayerState.Ladder;
+            }
+
+
+            // 점프
+            if (Input.GetKeyDown(KeyCode.A) && jumpCount < maxJumpCount)
+            {
+                if (_state == PlayerState.Wallside)
+                {
+                    _state = PlayerState.Jump;
+                    float jumpDirection = sprite.flipX ? 1f : -1f;
+                    rigid.velocity = new Vector2(jumpDirection * 1f, 6f);
+                }
+                else
+                {
+                    _state = PlayerState.Jump;
+                    rigid.velocity = Vector2.up * 6;
+                }
+                isMoving = true;
+                jumpCount++;
+            }
+
+            // 대쉬
+            if (Input.GetKeyDown(KeyCode.D) && !isDashing && !isCollWall)
+            {
+                dashTime = 0.3f;
+                isDashing = true;
+                _state = PlayerState.Dash;
+            }
+
+            // 공격
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                if (isDashing)
+                {
+                    _state = PlayerState.DashAttack;
+                }
+                else
+                {
+                    attackClick++;
+                    lastClickedTime = Time.time;
+                    _state = PlayerState.Attack;
                 }
             }
         }
-        else
-        {
-            peekingTIme = 0f;
-        }
-
-        // 사다리 이동
-        if (Input.GetKey(KeyCode.UpArrow) && _ladder)
-        {
-            transform.position += Vector3.up * Time.deltaTime * moveSpeed;
-            _state = PlayerState.Ladder;
-        }
-        else if (Input.GetKey(KeyCode.DownArrow) && _ladder)
-        {
-            transform.position += Vector3.down * moveSpeed * Time.deltaTime;
-            _state = PlayerState.Ladder;
-        }
-
-
-        // 점프
-        if (Input.GetKeyDown(KeyCode.A) && jumpCount < maxJumpCount)
-        {
-            if (_state == PlayerState.Wallside)
-            {
-                _state = PlayerState.Jump;
-                float jumpDirection = sprite.flipX ? 1f : -1f;
-                rigid.velocity = new Vector2(jumpDirection * 1f, 6f);
-            }
-            else
-            {
-                _state = PlayerState.Jump;
-                rigid.velocity = Vector2.up * 6;
-            }
-            isMoving = true;
-            jumpCount++;
-        }
-
-        // 대쉬
-        if (Input.GetKeyDown(KeyCode.D) && !isDashing && !isCollWall)
-        {
-            dashTime = 0.3f;
-            isDashing = true;
-            _state = PlayerState.Dash;
-        }
-
-        // 공격
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            if(isDashing)
-            {
-                _state = PlayerState.DashAttack;
-            }
-            else
-            {
-                attackClick++;
-                lastClickedTime = Time.time;
-                _state = PlayerState.Attack;
-            }
-        }
     }
-
+        
     #endregion
 }

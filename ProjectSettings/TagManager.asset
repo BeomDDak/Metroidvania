@@ -10,6 +10,7 @@ TagManager:
   - Ladder
   - Teleport
   - Trap
+  - Interact
   layers:
   - Default
   - TransparentFX

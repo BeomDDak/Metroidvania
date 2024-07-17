@@ -7,7 +7,7 @@ public class CameraMove : MonoBehaviour
     public Define.CameraMode _mode = Define.CameraMode.Middle;
 
     // 플레이어로부터 거리
-    Vector3 cameraPos = new Vector3(0f, 2f, -10f);
+    Vector3 cameraPos = new Vector3(0f, 2f, -7f);
 
     // 플레이어
     [SerializeField]
@@ -86,7 +86,7 @@ public class CameraMove : MonoBehaviour
         float limitCameraY = Mathf.Clamp(cameraY, bottomLimit, topLimit);
 
         // 카메라 이동
-        transform.position = new Vector3(limitCameraX, limitCameraY, -10);
+        transform.position = new Vector3(limitCameraX, limitCameraY, -7);
 
         // 피킹
         if (isPeeking)
@@ -104,12 +104,12 @@ public class CameraMove : MonoBehaviour
             {
                 movePeeking = bottomLimit;
             }
-            transform.position = new Vector3(limitCameraX,movePeeking, -10);
+            transform.position = new Vector3(limitCameraX,movePeeking, -7);
             
         }
         else 
         { 
-            transform.position = new Vector3(limitCameraX, limitCameraY, -10);
+            transform.position = new Vector3(limitCameraX, limitCameraY, -7);
             peeking = 0;
             
         }
