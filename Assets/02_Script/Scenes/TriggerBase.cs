@@ -6,14 +6,14 @@ public class TriggerBase : MonoBehaviour
 {
     protected bool canInteract = false;
     GameObject player;
-    PlayerInteract _playerInteract;
+    PlayerMove _playerMove;
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         if(player != null)
         {
-            _playerInteract = player.GetComponent<PlayerInteract>();
+            _playerMove = player.GetComponent<PlayerMove>();
         }
     }
 
@@ -22,7 +22,7 @@ public class TriggerBase : MonoBehaviour
     {
         if (canInteract)
         {
-            if (_playerInteract.pressInteract)
+            if (_playerMove.pressInteract)
             {
                 Interact();
             }

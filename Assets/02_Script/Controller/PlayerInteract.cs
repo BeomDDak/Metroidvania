@@ -7,17 +7,28 @@ public class PlayerInteract : MonoBehaviour
 
     public bool pressInteract = false;
 
-    private void OnTriggerStay2D(Collider2D collision)
+    public GameObject go;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            print(pressInteract);
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            print(pressInteract);
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if (collision.CompareTag("Interact"))
+        if (collision.CompareTag("Player"))
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 pressInteract = true;
-                print(pressInteract);
             }
-            print(pressInteract);
         }
     }
 

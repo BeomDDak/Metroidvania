@@ -21,6 +21,7 @@ public class PlayerMove : MonoBehaviour
         DashAttack,
         Peeking,
         Teleport,
+        Interact,
     }
     #endregion
 
@@ -66,6 +67,11 @@ public class PlayerMove : MonoBehaviour
      // 텔레포트
     Teleport teleport;
     bool canTeleport = false;
+
+    // 문 이동 인터렉트
+    bool canInteract = false;
+    public bool pressInteract = false;
+
     #endregion
 
     void Start()
@@ -80,7 +86,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        
+        print(_state);
         OnKeyboard();
 
         #region _state Switch문
@@ -136,6 +142,9 @@ public class PlayerMove : MonoBehaviour
             
             case PlayerState.Teleport:
                 UpdateTeleport();
+                break;
+            case PlayerState.Interact:
+                UpdateInteract();
                 break;
         }
         #endregion
@@ -273,6 +282,11 @@ public class PlayerMove : MonoBehaviour
             teleport = collision.gameObject.GetComponent<Teleport>();
             canTeleport = true;
         }
+
+        if (collision.CompareTag("Interact"))
+        {
+            canInteract = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -281,7 +295,21 @@ public class PlayerMove : MonoBehaviour
         {
             canTeleport = false;
         }
+
+        if (collision.CompareTag("Interact"))
+        {
+            canInteract = false;
+            pressInteract = false;
+        }
     }
+
+    void UpdateInteract()
+    {
+        anim.Play("Idle");
+        pressInteract = true;
+    }
+
+
 
     #endregion
 
@@ -461,11 +489,19 @@ public class PlayerMove : MonoBehaviour
 
             // Idle로 상태 변경
             if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside &&
-                _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit)
+                _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit && _state != PlayerState.Interact)
             {
                 moveSpeed = 5f;
                 _state = PlayerState.Idle;
                 attackClick = 0;
+            }
+
+            if (canInteract)
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    _state = PlayerState.Interact;
+                }
             }
 
             // 좌우 이동
