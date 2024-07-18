@@ -86,7 +86,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        print(_state);
+        
         OnKeyboard();
 
         #region _state Switch¹®
@@ -307,6 +307,7 @@ public class PlayerMove : MonoBehaviour
     {
         anim.Play("Idle");
         pressInteract = true;
+        _state = PlayerState.Idle;
     }
 
 

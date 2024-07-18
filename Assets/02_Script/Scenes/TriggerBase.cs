@@ -8,22 +8,30 @@ public class TriggerBase : MonoBehaviour
     GameObject player;
     PlayerMove _playerMove;
 
-    void Start()
+    // 플레이어 찾기
+    public virtual void ResetReferences()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        if(player != null)
+        if (player != null)
         {
             _playerMove = player.GetComponent<PlayerMove>();
         }
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        ResetReferences();
+    }
+
+    
+    // 실행문
     void Update()
     {
-        if (canInteract)
+        if (canInteract && !SceneSwapManager.isTransitioning)
         {
             if (_playerMove.pressInteract)
             {
+                Debug.Log($"Interact triggered on {gameObject.name}");
                 Interact();
             }
         }
@@ -33,6 +41,7 @@ public class TriggerBase : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            Debug.Log($"Player entered trigger area of {gameObject.name}");
             canInteract = true;
         }
     }
@@ -41,10 +50,12 @@ public class TriggerBase : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            Debug.Log($"Player exited trigger area of {gameObject.name}");
             canInteract = false;
         }
     }
 
+    // 자식 클래스에서 재정의
     public virtual void Interact() { }
 
 }

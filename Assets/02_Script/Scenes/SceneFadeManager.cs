@@ -15,6 +15,7 @@ public class SceneFadeManager : MonoBehaviour
 
     public bool isFadingOut { get; private set; }
     public bool isFadingIn {  get; private set; }
+    public bool isFadeOutComplete { get; private set; }
 
     private void Awake()
     {
@@ -40,7 +41,9 @@ public class SceneFadeManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("Fade out completed");
                 isFadingOut = false;
+                isFadeOutComplete = true;
             }
         }
 
@@ -54,23 +57,33 @@ public class SceneFadeManager : MonoBehaviour
             }
             else
             {
+                Debug.Log("Fade in completed");
                 isFadingIn = false;
             }
         }
     }
 
+    // 스타트 페이드아웃
     public void StartFadeOut()
     {
+        Debug.Log("StartFadeOut called");
         _fadeOutImage.color = fadeOutStartColor;
         isFadingOut = true;
+        isFadeOutComplete = false;
     }
 
+    // 스타트 페이드인
     public void StartFadeIn()
     {
-        if(fadeOutStartColor.a >= 1f)
+        Debug.Log("StartFadeIn called");
+        if (isFadeOutComplete)
         {
             _fadeOutImage.color = fadeOutStartColor;
             isFadingIn = true;
+        }
+        else
+        {
+            Debug.LogWarning("StartFadeIn called but alpha is not 1");
         }
     }
 }
