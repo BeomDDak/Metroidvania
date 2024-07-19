@@ -77,7 +77,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -90,7 +89,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -252,7 +250,6 @@ ScriptedImporter:
     cells:
     - name: Death_Frame_0
       frameIndex: 0
-      additiveSortOrder: 0
       cellRect:
         x: 35
         y: 0
@@ -261,7 +258,6 @@ ScriptedImporter:
       spriteId: 99a2b1f51f87c5744b94b3499b161327
     - name: Death_Frame_1
       frameIndex: 1
-      additiveSortOrder: 0
       cellRect:
         x: 34
         y: 0
@@ -270,7 +266,6 @@ ScriptedImporter:
       spriteId: 15e204fc9cb218b439fd259d62745e39
     - name: Death_Frame_2
       frameIndex: 2
-      additiveSortOrder: 0
       cellRect:
         x: 40
         y: 0
@@ -279,7 +274,6 @@ ScriptedImporter:
       spriteId: 717acec277d38524097268dda406c1f9
     - name: Death_Frame_3
       frameIndex: 3
-      additiveSortOrder: 0
       cellRect:
         x: 39
         y: 0
@@ -288,7 +282,6 @@ ScriptedImporter:
       spriteId: db2fcc5ded98f054883cb2d4fec120af
     - name: Death_Frame_4
       frameIndex: 4
-      additiveSortOrder: 0
       cellRect:
         x: 42
         y: 0
@@ -297,7 +290,6 @@ ScriptedImporter:
       spriteId: 98978206a4da58d4faac28cde86999cf
     - name: Death_Frame_5
       frameIndex: 5
-      additiveSortOrder: 0
       cellRect:
         x: 42
         y: 0
@@ -307,7 +299,6 @@ ScriptedImporter:
     linkedCells: []
     parentIndex: -1
   platformSettings: []
-  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 96, y: 80}

@@ -37,6 +37,7 @@ public class TriggerBase : MonoBehaviour
         }
     }
 
+    //  ===============트리거==================
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -52,6 +53,27 @@ public class TriggerBase : MonoBehaviour
         {
             Debug.Log($"Player exited trigger area of {gameObject.name}");
             canInteract = false;
+        }
+    }
+
+    // =============== 콜라이션 ==================
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log($"Player entered trigger area of {gameObject.name}");
+            canInteract = true;
+            _playerMove.pressInteract = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Debug.Log($"Player entered trigger area of {gameObject.name}");
+            canInteract = false;
+            _playerMove.pressInteract = false;
         }
     }
 

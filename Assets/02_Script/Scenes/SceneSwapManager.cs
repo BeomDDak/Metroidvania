@@ -117,6 +117,7 @@ public class SceneSwapManager : MonoBehaviour
             ResetAllTriggers();
         }
         isTransitioning = false;
+        MapRoomManager.instance.RevealRoom();
     }
 
     // 페이드 인 하기전에 페이드 아웃이 안끝나면 기다려라

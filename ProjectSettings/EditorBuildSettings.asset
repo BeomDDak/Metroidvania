@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/01_Scenes/Teleport.unity
     guid: f079908a156ad704b9598fa95e65b51c
+  - enabled: 1
+    path: Assets/01_Scenes/Blind.unity
+    guid: c5e20f36944f8074eabcfb8f2479e6e8
   m_configObjects: {}
