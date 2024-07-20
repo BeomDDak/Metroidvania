@@ -73,7 +73,7 @@ public class PlayerMove : MonoBehaviour
     public bool pressInteract = false;
 
     // ¸Ê
-    static bool isLargeMap = false;
+    public static bool isLargeMap = false;
 
     #endregion
 
@@ -89,11 +89,6 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            isLargeMap = !isLargeMap;
-        }
-
         OnKeyboard();
 
         #region _state Switch¹®
@@ -205,6 +200,10 @@ public class PlayerMove : MonoBehaviour
            cameraMove.SetIsPeeking(false, 0);
         }
 
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            isLargeMap = !isLargeMap;
+        }
     }
     #endregion
 

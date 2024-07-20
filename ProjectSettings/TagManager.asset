@@ -11,6 +11,7 @@ TagManager:
   - Teleport
   - Trap
   - Interact
+  - CameraRange
   layers:
   - Default
   - TransparentFX
