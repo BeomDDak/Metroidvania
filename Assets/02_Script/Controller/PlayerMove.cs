@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class PlayerMove : MonoBehaviour
         Peeking,
         Teleport,
         Interact,
+        Drink,
     }
     #endregion
 
@@ -34,13 +36,13 @@ public class PlayerMove : MonoBehaviour
 
     // 캐릭터 이동
     public float moveSpeed = 5f;
+    public Collider2D weaponColl;
 
     // 애니메이션
     Animator anim;
 
     // 점프 제한
     int jumpCount;
-    int maxJumpCount = 1;
     
     // 대쉬 변수
     float dashTime = 0f;
@@ -75,6 +77,11 @@ public class PlayerMove : MonoBehaviour
     // 맵
     public static bool isLargeMap = false;
 
+    // 포션
+    public TextMeshProUGUI potionCount;
+    PlayerDamage _heart;
+    bool isCountingPotion = false;
+
     #endregion
 
     void Start()
@@ -84,13 +91,14 @@ public class PlayerMove : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         cameraMove = FindObjectOfType<CameraMove>();
         teleport = FindObjectOfType<Teleport>();
+        _heart = GetComponent<PlayerDamage>();
         #endregion
     }
 
     void Update()
     {
         OnKeyboard();
-
+        potionCount.text = DataManager.instance.potion.ToString();
         #region _state Switch문
         switch (_state)
         {
@@ -148,6 +156,9 @@ public class PlayerMove : MonoBehaviour
             case PlayerState.Interact:
                 UpdateInteract();
                 break;
+            case PlayerState.Drink:
+                UpdateDrink();
+                break;
         }
         #endregion
 
@@ -204,16 +215,23 @@ public class PlayerMove : MonoBehaviour
         {
             isLargeMap = !isLargeMap;
         }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if( DataManager.instance.potion > 0 && _heart.heartHp < 4)
+            {
+                _state = PlayerState.Drink;
+            }
+        }
     }
     #endregion
 
     void UpdateDie()
     {
         anim.Play("Die");
-
     }
 
-    #region 업데이트피킹
+    #region 업데이트피킹 ( 안씀 )
     void UpdatePeeking()
     {
         
@@ -419,6 +437,27 @@ public class PlayerMove : MonoBehaviour
     }
     #endregion
 
+    #region 업데이트 드링크
+    void UpdateDrink()
+    {
+        if (!isCountingPotion)
+        {
+            anim.Play("Drink");
+            StartCoroutine(CountPotion());
+        }
+    }
+
+    IEnumerator CountPotion()
+    {
+        isCountingPotion = !isCountingPotion;
+        yield return new WaitForSeconds(1f);
+        DataManager.instance.potion--;
+        _heart.heartHp++;
+        _state = PlayerState.Idle;
+        isCountingPotion = !isCountingPotion;
+    }
+    #endregion
+
     // 대쉬 어택
     void UpdateDashAttack()
     {
@@ -495,14 +534,17 @@ public class PlayerMove : MonoBehaviour
             float moveDir = 0;
 
             // Idle로 상태 변경
-            if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash && _state != PlayerState.Wallside &&
-                _state != PlayerState.Attack && _state != PlayerState.Ladder && _state != PlayerState.Teleport && _state != PlayerState.Hit && _state != PlayerState.Interact)
+            if (!isMoving && _state != PlayerState.Jump && _state != PlayerState.Fall && _state != PlayerState.Dash 
+                && _state != PlayerState.Wallside &&_state != PlayerState.Attack && _state != PlayerState.Ladder 
+                && _state != PlayerState.Teleport && _state != PlayerState.Hit && _state != PlayerState.Interact
+                && _state != PlayerState.Drink)
             {
                 moveSpeed = 5f;
                 _state = PlayerState.Idle;
                 attackClick = 0;
             }
 
+            // 상호작용
             if (canInteract)
             {
                 if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -517,6 +559,7 @@ public class PlayerMove : MonoBehaviour
                 if (canMove && _state != PlayerState.Hit)
                 {
                     moveDir = -1f;
+                    weaponColl.offset = new Vector2(-0.362106f, weaponColl.offset.y);
                     sprite.flipX = true;
                     isMoving = true;
                 }
@@ -527,6 +570,7 @@ public class PlayerMove : MonoBehaviour
                 if (canMove && _state != PlayerState.Hit)
                 {
                     moveDir = 1f;
+                    weaponColl.offset = new Vector2(0.362106f, weaponColl.offset.y);
                     sprite.flipX = false;
                     isMoving = true;
                 }
@@ -583,7 +627,7 @@ public class PlayerMove : MonoBehaviour
 
 
             // 점프
-            if (Input.GetKeyDown(KeyCode.A) && jumpCount < maxJumpCount)
+            if (Input.GetKeyDown(KeyCode.A) && jumpCount < DataManager.instance.maxJumpCount)
             {
                 if (_state == PlayerState.Wallside)
                 {

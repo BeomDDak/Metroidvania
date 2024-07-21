@@ -6,7 +6,7 @@ using UnityEngine;
 public class Teleport : MonoBehaviour
 {
     public Transform toTeleport;
-    //public Transform targetTeleport;
+
     GameObject player;
     Vector2 _telePos;
 
@@ -17,7 +17,7 @@ public class Teleport : MonoBehaviour
 
     public void Tele()
     {
-        Invoke("TelePlayer", 1.2f);
+        Invoke("TelePlayer", 1.1f);
     }
 
     void TelePlayer()

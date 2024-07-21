@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public class PlayerDamage : MonoBehaviour
 {
@@ -11,7 +12,11 @@ public class PlayerDamage : MonoBehaviour
     PlayerMove _playerState;
 
     public GameObject[] heart = new GameObject[5];
-    int heartHp = 4;
+    public int heartHp = 4;
+
+    public TextMeshProUGUI jam;
+
+    public GameObject weaponColl1,weaponColl2;
 
     void Start()
     {
@@ -23,12 +28,12 @@ public class PlayerDamage : MonoBehaviour
 
     private void Update()
     {
+        jam.text = DataManager.instance.jam.ToString("###,###");
         UI_HeartChanges();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Æ®¸®°Å");
         if (collision.CompareTag("Trap"))
         {
             StartCoroutine(PlayerDamageEffect());
@@ -51,9 +56,9 @@ public class PlayerDamage : MonoBehaviour
 
     void UI_HeartChanges()
     {
-        if (heartHp > 5)
+        if (heartHp > 4)
         {
-            heartHp = 5;
+            heartHp = 4;
         }
 
         if (heartHp < 0)
@@ -80,5 +85,20 @@ public class PlayerDamage : MonoBehaviour
     {
         heartHp = heartHp + _changeCalc;
         return heartHp;
+    }
+
+    public void Attack1()
+    {
+        weaponColl1.SetActive(true);
+    }
+
+    public void StopAttack1()
+    {
+        weaponColl1.SetActive(false);
+    }
+
+    public void Attack2()
+    {
+        weaponColl2.SetActive(true);
     }
 }
