@@ -12,7 +12,7 @@ public class PlayerDamage : MonoBehaviour
     PlayerMove _playerState;
 
     public GameObject[] heart = new GameObject[5];
-    public int heartHp = 4;
+    public int playerHp = 4;
 
     public TextMeshProUGUI jam;
 
@@ -32,13 +32,20 @@ public class PlayerDamage : MonoBehaviour
         UI_HeartChanges();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.CompareTag("Trap"))
+        if (collision.gameObject.CompareTag("Trap"))
         {
             StartCoroutine(PlayerDamageEffect());
             _playerState._state = PlayerMove.PlayerState.Hit;
-            HeartCalc(-1);
+            playerHp--;
+        }
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            StartCoroutine(PlayerDamageEffect());
+            _playerState._state = PlayerMove.PlayerState.Hit;
+            playerHp--;
         }
     }
 
@@ -56,20 +63,20 @@ public class PlayerDamage : MonoBehaviour
 
     void UI_HeartChanges()
     {
-        if (heartHp > 4)
+        if (playerHp > 4)
         {
-            heartHp = 4;
+            playerHp = 4;
         }
 
-        if (heartHp < 0)
+        if (playerHp <= 0)
         {
-            heartHp = 0;
+            playerHp = 0;
             _playerState._state = PlayerMove.PlayerState.Die;
         }
 
         for (int i = 0; i < heart.Length; i++)
         {
-            if (heartHp == i)
+            if (playerHp == i)
             {
                 heart[i].SetActive(true);
             }
@@ -79,12 +86,6 @@ public class PlayerDamage : MonoBehaviour
                 heart[0].SetActive(true);
             }
         }
-    }
-
-    public int HeartCalc(int _changeCalc)
-    {
-        heartHp = heartHp + _changeCalc;
-        return heartHp;
     }
 
     public void Attack1()

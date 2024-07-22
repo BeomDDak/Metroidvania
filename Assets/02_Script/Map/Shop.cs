@@ -6,6 +6,8 @@ public class Shop : MonoBehaviour
 {
     private GameObject _player;
     private PlayerMove _playerInterect;
+
+    private bool openShop = false;
     [SerializeField] private GameObject shopUI;
 
     private void Start()
@@ -16,11 +18,18 @@ public class Shop : MonoBehaviour
 
     private void Update()
     {
-        if (_playerInterect.pressInteract)
+        if (_playerInterect.pressInteract && openShop)
         {
             shopUI.SetActive(true);
         }
-        _playerInterect.pressInteract = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            openShop = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -28,6 +37,7 @@ public class Shop : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             shopUI.SetActive(false);
+            openShop = false;
         }
     }
 }

@@ -97,6 +97,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+
         OnKeyboard();
         potionCount.text = DataManager.instance.potion.ToString();
         #region _state Switch문
@@ -218,7 +219,7 @@ public class PlayerMove : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            if( DataManager.instance.potion > 0 && _heart.heartHp < 4)
+            if( DataManager.instance.potion > 0 && _heart.playerHp < 4)
             {
                 _state = PlayerState.Drink;
             }
@@ -292,7 +293,7 @@ public class PlayerMove : MonoBehaviour
     }
     #endregion
 
-    #region 업데이트 텔레포트
+    #region 업데이트 텔레포트 업데이트 인터렉트
     void UpdateTeleport()
     {
         anim.Play("Teleport");
@@ -452,7 +453,7 @@ public class PlayerMove : MonoBehaviour
         isCountingPotion = !isCountingPotion;
         yield return new WaitForSeconds(1f);
         DataManager.instance.potion--;
-        _heart.heartHp++;
+        _heart.playerHp++;
         _state = PlayerState.Idle;
         isCountingPotion = !isCountingPotion;
     }
@@ -494,7 +495,6 @@ public class PlayerMove : MonoBehaviour
         attackClick = Mathf.Clamp(attackClick, 0, 3);
         
     }
-
 
     // 공격 애니메이션 이벤트 함수
     public void EndAttack()

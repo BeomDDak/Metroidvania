@@ -11,12 +11,13 @@ public class Enemy : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     bool isMoving = true;
+    //public LayerMask groundLayer;
 
     // 방향전환
     float timer = 0f;
     float changeDirTime = 2f;
 
-    int enemyHP = 5;
+    public int enemyHP = 5;
 
 
 
@@ -25,10 +26,26 @@ public class Enemy : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // 공격 당했을때
+        if (collision.CompareTag("Attack"))
+        {
+            enemyHP--;
+            float knockbackDirection = spriteRenderer.flipX ? 1 : -1;
+            transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
+            if (enemyHP <= 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+
 
     //  감지
     private void OnTriggerStay2D(Collider2D collision)
     {
+        // 플레이어 감지
         if (collision.CompareTag("Player"))
         {
             isMoving = false;
@@ -38,6 +55,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // 감지 범위안에 플레이어 없으며 돌아다님
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -48,6 +66,10 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        //RaycastHit2D hit = Physics2D.Raycast(transform.position,Vector3.down,10f,groundLayer);
+        //Debug.DrawRay(transform.position,Vector3.down,Color.red);
+        //Debug.Log(hit.collider.gameObject.name);
+
         if (isMoving)
         {
             timer += Time.deltaTime;
@@ -63,16 +85,4 @@ public class Enemy : MonoBehaviour
             transform.Translate(Vector2.right * speed * Time.deltaTime * dir);
         }
     }
-
-    // 몸통
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        
-    }
-
 }
