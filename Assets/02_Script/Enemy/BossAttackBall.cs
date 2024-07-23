@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAttackBall : MonoBehaviour
+public class BossAttackBall : MonoBehaviour
 {
-    float speed = 3f;
-    Enemy2 _enemy;
-    float deleteObj = 3f;
+    float speed = 5f;
+    Enemy3 _enemy;
+    float deleteObj = 5f;
     float deleteTime = 0f;
     int _enemyFlip;
     void Start()
     {
-        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy2>();
+        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy3>();
         _enemyFlip = _enemy.GetComponent<SpriteRenderer>().flipX ? 1 : -1;
 
     }
@@ -22,7 +22,7 @@ public class EnemyAttackBall : MonoBehaviour
         transform.Translate(Vector2.left * speed * Time.deltaTime * _enemyFlip);
 
         deleteTime += Time.deltaTime;
-        if(deleteTime > deleteObj)
+        if (deleteTime > deleteObj)
         {
             deleteTime = 0f;
             Destroy(gameObject);

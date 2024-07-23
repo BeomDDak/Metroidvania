@@ -1,33 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Enemy2 : MonoBehaviour
+public class Enemy3 : MonoBehaviour
 {
     // 이동관련
-    float speed = 1f;
+    float speed = 3f;
     float dir = 1f;
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     bool isMoving = true;
-    //public LayerMask groundLayer;
 
     // 방향전환
     float timer = 0f;
     float changeDirTime = 2f;
 
     // 에너미 HP
-    public int enemyHP = 8;
+    public float enemyHP = 1;
 
     // 에너미 원거리 공격
     public Transform attackPoint;
     public GameObject attackBall;
-    bool isAttack= false;
+    bool isAttack = false;
     public float attackCooldown = 2f; // 공격 쿨다운 시간
     private float lastAttackTime; // 마지막 공격 시간
 
+    //UI, 기믹
+    public Image HpImage;
+    public GameObject breakTile;
+    public GameObject skill;
+    public Transform[] skill1;
+    public Transform[] skill2;
+    float skillTime = 0;
+
     // 전리품
-    public GameObject Lever;
 
 
     void Start()
@@ -42,12 +49,11 @@ public class Enemy2 : MonoBehaviour
         // 공격 당했을때
         if (collision.CompareTag("Attack"))
         {
-            enemyHP--;
+            enemyHP -= 0.05f;
             float knockbackDirection = spriteRenderer.flipX ? 1 : -1;
             transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
             if (enemyHP <= 0)
             {
-                Lever.SetActive(true);
                 Destroy(gameObject);
 
             }
@@ -78,12 +84,7 @@ public class Enemy2 : MonoBehaviour
         if (attackPoint != null && attackBall != null)
         {
             Instantiate(attackBall, attackPoint.position, attackPoint.rotation);
-            Debug.Log("Attack ball instantiated");
             lastAttackTime = Time.time; // 마지막 공격 시간 업데이트
-        }
-        else
-        {
-            Debug.LogWarning("attackPoint or attackBall is null");
         }
     }
 
@@ -98,10 +99,6 @@ public class Enemy2 : MonoBehaviour
 
     private void Update()
     {
-        //RaycastHit2D hit = Physics2D.Raycast(transform.position,Vector3.down,10f,groundLayer);
-        //Debug.DrawRay(transform.position,Vector3.down,Color.red);
-        //Debug.Log(hit.collider.gameObject.name);
-
         if (isMoving)
         {
             timer += Time.deltaTime;
@@ -109,12 +106,39 @@ public class Enemy2 : MonoBehaviour
             if (timer >= changeDirTime)
             {
                 dir *= -1;
-                changeDirTime = Random.Range(2f, 5f);
+                changeDirTime = Random.Range(2f, 10f);
                 timer = 0f;
             }
             spriteRenderer.flipX = dir == 1 ? false : true;
 
             transform.Translate(Vector2.right * speed * Time.deltaTime * dir);
+        }
+
+        HpImage.fillAmount = enemyHP;
+        if(enemyHP <= 0.5)
+        {
+            breakTile.SetActive(false);
+        }
+
+        skillTime += Time.deltaTime;
+        if(skillTime > 10f)
+        {
+            int canSkill = Random.Range(0, 2);
+            if(canSkill == 0)
+            {
+                for(int i = 0; i < skill1.Length; i++)
+                {
+                    Instantiate(skill, skill1[i].transform.position, Quaternion.identity);
+                }
+            }
+            else
+            {
+                for(int i = 0; i < skill2.Length; i++)
+                {
+                    Instantiate(skill, skill2[i].transform.position, Quaternion.identity);
+                }
+            }
+            skillTime = 0;
         }
     }
 }

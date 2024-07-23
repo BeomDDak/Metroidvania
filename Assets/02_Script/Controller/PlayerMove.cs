@@ -230,6 +230,13 @@ public class PlayerMove : MonoBehaviour
     void UpdateDie()
     {
         anim.Play("Die");
+        StartCoroutine(DiePanel());
+    }
+
+    IEnumerator DiePanel()
+    {
+        yield return new WaitForSeconds(2f);
+
     }
 
     #region 업데이트피킹 ( 안씀 )

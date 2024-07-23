@@ -32,6 +32,8 @@ public class PlayerDamage : MonoBehaviour
         UI_HeartChanges();
     }
 
+    
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Trap"))
@@ -48,6 +50,17 @@ public class PlayerDamage : MonoBehaviour
             playerHp--;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Trap"))
+        {
+            StartCoroutine(PlayerDamageEffect());
+            _playerState._state = PlayerMove.PlayerState.Hit;
+            playerHp--;
+        }
+    }
+
 
     // 캐릭터 데미지 이펙트
     IEnumerator PlayerDamageEffect()
