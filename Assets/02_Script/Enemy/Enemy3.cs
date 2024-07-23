@@ -23,7 +23,7 @@ public class Enemy3 : MonoBehaviour
     public Transform attackPoint;
     public GameObject attackBall;
     bool isAttack = false;
-    public float attackCooldown = 2f; // 공격 쿨다운 시간
+    public float attackCooldown = 4f; // 공격 쿨다운 시간
     private float lastAttackTime; // 마지막 공격 시간
 
     //UI, 기믹
@@ -35,7 +35,7 @@ public class Enemy3 : MonoBehaviour
     float skillTime = 0;
 
     // 전리품
-
+    public GameObject gameClear;
 
     void Start()
     {
@@ -49,13 +49,13 @@ public class Enemy3 : MonoBehaviour
         // 공격 당했을때
         if (collision.CompareTag("Attack"))
         {
-            enemyHP -= 0.05f;
+            enemyHP -= 1f;
             float knockbackDirection = spriteRenderer.flipX ? 1 : -1;
             transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
             if (enemyHP <= 0)
             {
+                gameClear.SetActive(true);
                 Destroy(gameObject);
-
             }
         }
     }

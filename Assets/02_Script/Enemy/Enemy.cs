@@ -17,14 +17,18 @@ public class Enemy : MonoBehaviour
     float timer = 0f;
     float changeDirTime = 2f;
 
+    // hp
     public int enemyHP = 5;
+    Collider2D col;
 
-
+    // 전리품
+    public GameObject jam;
 
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        col = GetComponent<CircleCollider2D>();
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -36,11 +40,19 @@ public class Enemy : MonoBehaviour
             transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
             if (enemyHP <= 0)
             {
-                Destroy(gameObject);
+                Destroy(col);
+                transform.rotation = Quaternion.Euler(0,0,90);
+                Instantiate(jam,transform.position,Quaternion.identity);
+                DataManager.instance.jam += 10;
+                Invoke("EnemyDie", 1f);
             }
         }
     }
 
+    void EnemyDie()
+    {
+        Destroy(gameObject);
+    }
 
     //  감지
     private void OnTriggerStay2D(Collider2D collision)

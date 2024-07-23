@@ -12,6 +12,7 @@ TagManager:
   - Trap
   - Interact
   - CameraRange
+  - Dead
   layers:
   - Default
   - TransparentFX

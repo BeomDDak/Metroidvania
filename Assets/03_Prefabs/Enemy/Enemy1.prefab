@@ -208,3 +208,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyHP: 5
+  jam: {fileID: 2619380946264860682, guid: 0c9dfc0588238b74e86a847759b02b90, type: 3}

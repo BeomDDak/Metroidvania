@@ -18,6 +18,7 @@ public class Enemy2 : MonoBehaviour
 
     // 에너미 HP
     public int enemyHP = 8;
+    Collider2D col;
 
     // 에너미 원거리 공격
     public Transform attackPoint;
@@ -28,12 +29,14 @@ public class Enemy2 : MonoBehaviour
 
     // 전리품
     public GameObject Lever;
+    public GameObject jam;
 
 
     void Start()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        col = GetComponent<CircleCollider2D>();
         isAttack = false;
         lastAttackTime = -attackCooldown; // 게임 시작 시 바로 공격할 수 있도록 설정
     }
@@ -47,11 +50,19 @@ public class Enemy2 : MonoBehaviour
             transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
             if (enemyHP <= 0)
             {
+                Destroy(col);
                 Lever.SetActive(true);
-                Destroy(gameObject);
+                transform.rotation = Quaternion.Euler(0, 0, 90);
+                Instantiate(jam, transform.position, Quaternion.identity);
+                DataManager.instance.jam += 50;
+                Invoke("EnemyDie", 1f);
 
             }
         }
+    }
+    void EnemyDie()
+    {
+        Destroy(gameObject);
     }
 
     //  감지

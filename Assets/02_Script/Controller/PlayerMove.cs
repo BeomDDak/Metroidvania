@@ -5,6 +5,7 @@ using TMPro;
 
 public class PlayerMove : MonoBehaviour
 {
+    public static PlayerMove instance;
 
     #region Enum 캐릭터 상태
     public enum PlayerState

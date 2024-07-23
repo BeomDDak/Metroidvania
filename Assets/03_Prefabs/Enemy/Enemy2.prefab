@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 4120820760945472325}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.64, y: -0.67, z: 0}
+  m_LocalPosition: {x: -0.01, y: -0.67, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42,6 +42,9 @@ GameObject:
   - component: {fileID: 7815727071237277915}
   - component: {fileID: 4362453005247719282}
   - component: {fileID: 5427377552136959169}
+  - component: {fileID: 2504913884528740081}
+  - component: {fileID: 6833208324726468254}
+  - component: {fileID: 5514501585025304214}
   m_Layer: 8
   m_Name: Enemy2
   m_TagString: Enemy
@@ -162,3 +165,83 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 14.8944435, y: 3.61}
   m_EdgeRadius: 0
+--- !u!58 &2504913884528740081
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6228065788538655412}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1.805
+--- !u!50 &6833208324726468254
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6228065788538655412}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &5514501585025304214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6228065788538655412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63034ffb3d9b6446a2869149c60b30b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHP: 8
+  attackPoint: {fileID: 7203881886117568426}
+  attackBall: {fileID: 3137997492234621738, guid: 7f4026494b103fe4aa65a9cc24a29e64, type: 3}
+  attackCooldown: 2
+  Lever: {fileID: 0}
+  jam: {fileID: 2619380946264860682, guid: 0c9dfc0588238b74e86a847759b02b90, type: 3}

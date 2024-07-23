@@ -6,20 +6,28 @@ using TMPro;
 
 public class PlayerDamage : MonoBehaviour
 {
+    // 캐릭터 상태 변화 변수
     SpriteRenderer playerColor;
     Color oriColor;
     Color damageColor;
     PlayerMove _playerState;
 
+    // HP 관련 변수
     public GameObject[] heart = new GameObject[5];
     public int playerHp = 4;
+    public SpriteMask SpriteMask;
+    public GameObject gameOverImage;
+    float deadTIme = 0;
 
+    // 재화 변수
     public TextMeshProUGUI jam;
 
+    // 공격 콜라이더
     public GameObject weaponColl1,weaponColl2;
 
     void Start()
     {
+        // 변수 초기화
         playerColor = GetComponent<SpriteRenderer>();
         oriColor = playerColor.color;
         damageColor = Color.red;
@@ -28,12 +36,12 @@ public class PlayerDamage : MonoBehaviour
 
     private void Update()
     {
+        // 재화 표시
         jam.text = DataManager.instance.jam.ToString("###,###");
         UI_HeartChanges();
     }
 
-    
-
+    // ============== 피격 ==============
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Trap"))
@@ -74,6 +82,7 @@ public class PlayerDamage : MonoBehaviour
         }
     }
 
+    // ============= HP ==============
     void UI_HeartChanges()
     {
         if (playerHp > 4)
@@ -85,6 +94,12 @@ public class PlayerDamage : MonoBehaviour
         {
             playerHp = 0;
             _playerState._state = PlayerMove.PlayerState.Die;
+            deadTIme += Time.deltaTime;
+            if(deadTIme > 1f)
+            {
+                SpriteMask.alphaCutoff += Time.deltaTime * 0.5f;
+                gameOverImage.SetActive(true);
+            }
         }
 
         for (int i = 0; i < heart.Length; i++)
@@ -101,6 +116,7 @@ public class PlayerDamage : MonoBehaviour
         }
     }
 
+    // ========= 공격 ============
     public void Attack1()
     {
         weaponColl1.SetActive(true);
@@ -114,5 +130,10 @@ public class PlayerDamage : MonoBehaviour
     public void Attack2()
     {
         weaponColl2.SetActive(true);
+    }
+
+    public void StopAttack2()
+    {
+        weaponColl2.SetActive(false);
     }
 }

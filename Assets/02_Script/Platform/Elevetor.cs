@@ -33,7 +33,6 @@ public class Elevetor : MonoBehaviour
         state = ElevatorState.down;
     }
 
-
     void Update()
     {
         switch (state)
@@ -47,7 +46,6 @@ public class Elevetor : MonoBehaviour
                 break;
         }
     }
-
     void DownElevator()
     {
         if(isMoving)
