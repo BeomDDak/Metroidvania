@@ -36,18 +36,18 @@ public class TitleSceneManager : MonoBehaviour
         // 키보드로 버튼 변경
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            selectIndex = (selectIndex - 1 + btns.Length) % btns.Length;
-            SlectButtonColor();
+            selectIndex = (selectIndex - 1 + btns.Length) % btns.Length;                    // 윗키 클릭시 인덱스 감소
+            SlectButtonColor();                                                             // 색깔 변경
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            selectIndex = (selectIndex + 1) % btns.Length;
-            SlectButtonColor();
+            selectIndex = (selectIndex + 1) % btns.Length;                                  // 아랫키 클릭시 인덱스 증가
+            SlectButtonColor();                                                             // 색깔 변경
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S))                                                    // S키 클릭시 선택 확정
         {
-            ExecuteSelect();
+            ExecuteSelect();                                                                
         }
 
         if (isWalk && !isSelet)
@@ -65,10 +65,9 @@ public class TitleSceneManager : MonoBehaviour
 
     }
 
-    // 선택 변경 시 버튼 색깔 변경
-    void SlectButtonColor()
+    void SlectButtonColor()                            // 선택 변경 시 버튼 색깔 변경
     {
-        for (int i = 0; i < btns.Length; i++)
+        for (int i = 0; i < btns.Length; i++)          // 인덱스 번호와 일치하면 노랑색 아니면 흰색
         {
             btns[i].GetComponent<Image>().color = (i == selectIndex) ? selectedColor : normalColor;
         }
@@ -77,14 +76,14 @@ public class TitleSceneManager : MonoBehaviour
     // 선택 하면
     void ExecuteSelect()
     {
-        isSelet = true;
-        switch (selectIndex)
+        isSelet = true;                         // 캐릭터 애니메이션을 위한 bool 변수
+        switch (selectIndex)                    // 인덱스 번호와 일치하는 case의 함수 실행
         {
-            case 0:
-                StartCoroutine(StartAnim());
+            case 0:                             
+                StartCoroutine(StartAnim());    // 시작씬으로 변경
                 break;
             case 1:
-                StartCoroutine(ExitAnim());
+                StartCoroutine(ExitAnim());     // 게임 종료
                 break;
         }
     }

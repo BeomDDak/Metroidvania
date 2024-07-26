@@ -35,19 +35,18 @@ public class SceneFadeManager : MonoBehaviour
         {
             if(_fadeOutImage.color.a < 1f)
             {
-                // 알파 값은 바로 대입 불가능 -> 변수들에 값을 할당하고 통채로 넣어줌
                 fadeOutStartColor.a += Time.deltaTime * _fadeOutSpeed;
                 _fadeOutImage.color = fadeOutStartColor;
             }
             else
             {
-                Debug.Log("Fade out completed");
                 isFadingOut = false;
                 isFadeOutComplete = true;
             }
         }
 
-        // 페이드 인
+        #region 페이드 인
+
         if (isFadingIn)
         {
             if (_fadeOutImage.color.a > 0f)
@@ -57,16 +56,16 @@ public class SceneFadeManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Fade in completed");
                 isFadingIn = false;
             }
         }
+
+        #endregion
     }
 
     // 스타트 페이드아웃
     public void StartFadeOut()
     {
-        Debug.Log("StartFadeOut called");
         _fadeOutImage.color = fadeOutStartColor;
         isFadingOut = true;
         isFadeOutComplete = false;
@@ -75,15 +74,10 @@ public class SceneFadeManager : MonoBehaviour
     // 스타트 페이드인
     public void StartFadeIn()
     {
-        Debug.Log("StartFadeIn called");
         if (isFadeOutComplete)
         {
             _fadeOutImage.color = fadeOutStartColor;
             isFadingIn = true;
-        }
-        else
-        {
-            Debug.LogWarning("StartFadeIn called but alpha is not 1");
         }
     }
 }

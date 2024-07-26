@@ -67,30 +67,21 @@ public class SceneSwapManager : MonoBehaviour
     // 기본값은 None으로 설정하여 설정하기 전에는 이동되지 않게함
     private IEnumerator FadeOutThenChangeScene(SceneField myScene, DoorTrigger.DoorToSpawnAt doorToSpawn = DoorTrigger.DoorToSpawnAt.None)
     {
-        Debug.Log("FadeOutThenChangeScene started");
-        // 화면 검정색 -> 페이드 아웃 -> 문 할당 -> 새 씬 로드
-
         // 페이드아웃매니저에 페이드 아웃 호출
         SceneFadeManager.instance.StartFadeOut();
 
         // 페이드아웃이 끝나기 전까지 기다림
         yield return new WaitUntil(() => SceneFadeManager.instance.isFadeOutComplete);
 
-        Debug.Log("Fade out completed");
         _doorToSpawnTo = doorToSpawn;
 
         // 씬이동
-        Debug.Log($"Attempting to load scene: {myScene.SceneName}");
         SceneManager.LoadScene(myScene);
-
-        Debug.Log($"LoadScene called for {myScene.SceneName}");
-
     }
 
     // 씬 불러와지면
     private void OnSceneLoded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"OnSceneLoaded called. Scene: {scene.name}, LoadSceneMode: {mode}");
         // 페이드 아웃이 끝나면 페이드인 시작
         if (SceneFadeManager.instance.isFadeOutComplete)
         {
@@ -99,22 +90,18 @@ public class SceneSwapManager : MonoBehaviour
         else
         {
             // 페이드 아웃 끝나는거 기다리는 함수 호출
-            Debug.LogWarning("Scene loaded but fade out is not complete. Waiting...");
             StartCoroutine(WaitForFadeOutThenStartFadeIn());
         }
 
         // 문 찾기 시작
         if (_loadFromDoor)
         {
-            Debug.Log($"Loading from door. DoorToSpawnTo: {_doorToSpawnTo}");
             // 지정한 문 번호로 문 찾기
             FindDoor(_doorToSpawnTo);
 
             // 플레이어 위치 이동
             _player.transform.position = _playerSpawnPosition;
             _loadFromDoor = false;
-
-            ResetAllTriggers();
         }
         isTransitioning = false;
         MapRoomManager.instance.RevealRoom();
@@ -128,19 +115,19 @@ public class SceneSwapManager : MonoBehaviour
     }
 
     // 플레이어 찾아서 지정
-    private void ResetAllTriggers()
+    /*private void ResetAllTriggers()
     {
         TriggerBase[] allTriggers = FindObjectsOfType<TriggerBase>();
         foreach (TriggerBase trigger in allTriggers)
         {
             trigger.ResetReferences();
         }
-    }
+    }*/
 
     // 문 찾기 ( 캐릭터 위치 지정 하기 위해 )
+
     private void FindDoor(DoorTrigger.DoorToSpawnAt doorSpawnNum)
     {
-        Debug.Log($"FindDoor called. Looking for door: {doorSpawnNum}");
         DoorTrigger[] doors = FindObjectsOfType<DoorTrigger>();
 
         for(int i = 0; i < doors.Length; i++)
@@ -153,7 +140,6 @@ public class SceneSwapManager : MonoBehaviour
                 return;
             }
         }
-        Debug.LogWarning($"Door not found for position: {doorSpawnNum}");
     }
 
     // 캐릭터 위치 -> 문 위치로 이동

@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class TriggerBase : MonoBehaviour
 {
-    protected bool canInteract = false;
-    GameObject player;
+    protected bool canInteract = false;             // 콜라이더에 닿았는지 확인할 bool 변수
+    GameObject player;  
     PlayerMove _playerMove;
 
     // 플레이어 찾기
-    public virtual void ResetReferences()
+    /*public virtual void ResetReferences()           // 씬 이동해도 계속 찾기 위한 함수
     {
         player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             _playerMove = player.GetComponent<PlayerMove>();
         }
-    }
+    }*/
 
     void Start()
     {
-        ResetReferences();
+        //ResetReferences();
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            _playerMove = player.GetComponent<PlayerMove>();
+        }
     }
 
     
