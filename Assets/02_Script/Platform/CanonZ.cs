@@ -25,8 +25,8 @@ public class CanonZ : MonoBehaviour
             scaleXY = transform.localScale.x;
             scaleXY += 2 * Time.deltaTime;
 
-            transform.Rotate(Vector3.forward * speed * Time.deltaTime);
-            transform.localScale = new Vector2(scaleXY, scaleXY);
+            transform.Rotate(Vector3.forward * speed * Time.deltaTime);     // 회전
+            transform.localScale = new Vector2(scaleXY, scaleXY);           // 크기
 
             if (transform.localScale.x >= 10f)
             {

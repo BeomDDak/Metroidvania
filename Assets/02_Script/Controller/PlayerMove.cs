@@ -98,10 +98,13 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-
         OnKeyboard();
+
+        // 포션 갯수 업데이트
         potionCount.text = DataManager.instance.potion.ToString();
+
         #region _state Switch문
+
         switch (_state)
         {
             case PlayerState.Idle:
@@ -164,12 +167,15 @@ public class PlayerMove : MonoBehaviour
         }
         #endregion
 
-        // 낙하시
-        if (rigid.velocity.y < 0 && _state != PlayerState.Wallside && _state != PlayerState.Dash && _state != PlayerState.Hit)
+        #region 낙하시
+        if (rigid.velocity.y < 0 && _state != PlayerState.Wallside 
+            && _state != PlayerState.Dash && _state != PlayerState.Hit)
         {
             _state = PlayerState.Fall;
             canMove = true;
         }
+
+        #endregion
     }
 
     #region FixedUpdate() (대쉬 중이 아닐때 물리 적용)
@@ -228,17 +234,13 @@ public class PlayerMove : MonoBehaviour
     }
     #endregion
 
+    #region 업데이트 다이
     void UpdateDie()
     {
         anim.Play("Die");
-        StartCoroutine(DiePanel());
     }
 
-    IEnumerator DiePanel()
-    {
-        yield return new WaitForSeconds(2f);
-
-    }
+    #endregion
 
     #region 업데이트피킹 ( 안씀 )
     void UpdatePeeking()
@@ -348,6 +350,7 @@ public class PlayerMove : MonoBehaviour
     #endregion
 
     #region OnCollisionStay,Exit (땅 -> Idle, 벽 옆면-> Wallside) 
+
     void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Map"))
