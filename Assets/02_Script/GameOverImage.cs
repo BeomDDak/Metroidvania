@@ -33,6 +33,8 @@ public class GameOverImage : MonoBehaviour
             blinkTxt = true;
             if (Input.anyKeyDown)
             {
+                PlayerMove _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
+                _player._state = PlayerMove.PlayerState.Idle;
                 SpriteMask.alphaCutoff = 0;
                 this.transform.position = oritransform.position;
                 this.gameObject.SetActive(false);
@@ -44,7 +46,7 @@ public class GameOverImage : MonoBehaviour
 
         if (blinkTxt)
         {
-            txt.DOFade(0f, 1).SetLoops(-1);
+            txt.DOFade(0f, 1).SetLoops(-1,LoopType.Incremental);
         }
     }
 }

@@ -84,12 +84,11 @@ public class MapManager : MonoBehaviour
         Vector2 worldSize = size / _mapImage.canvas.scaleFactor;
         mapSize = worldSize / 2f;
     }
-
+    
 
     // ¸Ê ÁÜ
     private void HandleMapZoom()
     {
-
         // ¸¶¿ì½º ÈÙ °ª
         float scrollDelta = Input.mouseScrollDelta.y;
         if (scrollDelta != 0)

@@ -49,7 +49,7 @@ public class Enemy3 : MonoBehaviour
         // 공격 당했을때
         if (collision.CompareTag("Attack"))
         {
-            enemyHP -= 1f;
+            enemyHP -= 0.2f;
             float knockbackDirection = spriteRenderer.flipX ? 1 : -1;
             transform.position += Vector3.right * knockbackDirection * 30 * Time.deltaTime;     // rigid로 바꿔주면 좋을듯
             if (enemyHP <= 0)

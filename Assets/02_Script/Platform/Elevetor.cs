@@ -46,6 +46,7 @@ public class Elevetor : MonoBehaviour
                 break;
         }
     }
+
     void DownElevator()
     {
         if(isMoving)
