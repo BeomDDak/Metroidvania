@@ -5132,9 +5132,9 @@ MonoBehaviour:
   potion: 3
   mapRader: {fileID: 1432933442}
   maxJumpCount: 1
-  stage1Clear: 1
-  stage2Clear: 1
-  stage3Clear: 1
+  stage1Clear: 0
+  stage2Clear: 0
+  stage3Clear: 0
 --- !u!1 &722608229
 GameObject:
   m_ObjectHideFlags: 0
